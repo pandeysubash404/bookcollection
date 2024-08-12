@@ -69,6 +69,23 @@ Before starting the application, ensure that the `database` exists in your MySQL
 
 The server will start on `http://localhost:5000` by default.
 
+3. **Test the application:**
+
+    - Run the test:
+
+        ```bash
+        npm test
+        ```
+    - Visualize the Test Coverage Report:
+    
+         After running the `npm test`, locate the coverage report in your project `./coverage` directory
+
+        ```bash
+        open ./coverage/index.html
+        ```
+        or manually navigate to the file location and open it with your preferred web browser.
+
+
 ### API Endpoints
 
 The following are some of the key endpoints provided by the BookCollection API:
