@@ -3,7 +3,7 @@ import Book from '../../src/models/Book.model.js';
 
 jest.mock('../../src/models/Book.model.js');
 
-describe.only('Book Service', () => {
+describe('Book Service', () => {
   describe('createBook', () => {
     it('should create a new book and return it', async () => {
       const mockBook = { id: 1, title: 'Test Book', author: 'Test Author' };

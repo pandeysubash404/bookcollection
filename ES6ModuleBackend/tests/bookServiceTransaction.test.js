@@ -1,9 +1,9 @@
 import initializePool from "../src/config/db";
 import { createBook, updateBook, deleteBook } from '../src/services/bookService.js';
 
-describe.only('Book Service with ACID Transactions', () => {
+describe('Book Service with ACID Transactions', () => {
 
-    let pool;
+  let pool;
   let bookId;
 
   beforeAll(async () => {
@@ -11,28 +11,31 @@ describe.only('Book Service with ACID Transactions', () => {
     await pool.query('TRUNCATE TABLE books');
   });
 
+  beforeEach(async () => {
+    await pool.query("START TRANSACTION");
+  });
+
   afterAll(async () => {
     await pool.end();
   });
 
   it('should create a new book and rollback the transaction', async () => {
-    // await pool.query("START TRANSACTION");
-    
-    const bookData = { title: 'Test Book', author: 'Test Author' };
+   
+    const bookData = { title: 'Test Book 1', author: 'Test Author 1' };
 
     bookId = await createBook(bookData.title, bookData.author);
     
+    const [booksAfterRollback] = await pool.query('SELECT * FROM `Books` WHERE `title` = ? AND `author` = ?', [bookData.title, bookData.author]);
+    expect(booksAfterRollback.length).toEqual(1);
+
     // Rollback the transaction
     // await pool.query("ROLLBACK");
    
-    const [booksAfterRollback] = await pool.query('SELECT * FROM `Books` WHERE `title` = ? AND `author` = ?', [bookData.title, bookData.author]);
-    expect(booksAfterRollback.length).toEqual(1);
     // Verify that the inserted book is not present in the database after rollback
     // expect(booksAfterRollback.length).toEqual(0);
   });
 
   it('should update a book and rollback the transaction', async () => {
-    await pool.query("START TRANSACTION");
     const [expectedBooksAfterRollback] = await pool.query('SELECT * FROM `Books` WHERE `id` = ?', [bookId]);
     
     const updatedBook = { title: 'Updated Test Book', author: 'Updated Test Author' };
@@ -49,7 +52,6 @@ describe.only('Book Service with ACID Transactions', () => {
   });
 
     it('should delete a book and rollback the transaction', async () => {
-    await pool.query("START TRANSACTION");
     const [expectedBooksAfterRollback] = await pool.query('SELECT * FROM `Books` WHERE `id` = ?', [bookId]);
         
     const result = await deleteBook(bookId);
